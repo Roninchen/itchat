@@ -115,7 +115,7 @@ func CheckLogin(uuid string) (int64, string) {
  * 首先根据回调URI再次Get一次微信服务器，得到XML格式的登陆数据
  * 解析XML，向map中压入相关数据
  */
-func ProcessLoginInfo(loginInfoStr string) (m.LoginMap, error) {
+func ProcessLoginInfo(loginContent string) (m.LoginMap, error) {
 	resultMap := m.LoginMap{}
 
 	re := regexp.MustCompile(`window.redirect_uri="(\S+)";`)

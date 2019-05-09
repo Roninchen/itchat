@@ -28,4 +28,7 @@ type LoginMap struct {
 	SyncKeyStr string           /* Keys组装成的字符串 */
 
 	Cookies []*http.Cookie /* 微信相关API需要用到的Cookies */
+
+	Info    map[string]string
+	User    User
 }
