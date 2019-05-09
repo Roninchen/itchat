@@ -164,11 +164,11 @@ func SendMsg(loginMap *m.LoginMap, wxSendMsg m.WxSendMsg) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("有人@我,随机睡几秒在发消息")
-	num := rand.Int31n(5)
+	fmt.Println("有人@我,随机睡一会")
+	num := rand.Int31n(3)
 	time.Sleep(time.Duration(num)*time.Second)
 	// TODO: 发送微信消息时暂不处理返回值
-	_, err = http.Post(e.WEB_WX_SENDMSG_URL+t.GetURLParams(urlMap), e.JSON_HEADER, strings.NewReader(string(jsonBytes)))
+	_, err = http.Post(loginMap.Info["syncUrl"] + "/webwxsendmsg" +t.GetURLParams(urlMap), e.JSON_HEADER, strings.NewReader(string(jsonBytes)))
 	if err != nil {
 		return err
 	}
