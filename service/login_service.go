@@ -13,6 +13,7 @@ import (
 	"itchat4go/util"
 	"net/http"
 	"net/http/cookiejar"
+	"net/url"
 	"os"
 	"regexp"
 	"strconv"
@@ -178,49 +179,47 @@ func ProcessLoginInfo(loginContent string) (m.LoginMap, error) {
 }
 
 /* 初始化微信登陆数据 */
-func InitWX(loginMap *m.LoginMap) error {
-	/* post URL */
-	var urlMap = e.GetInitParaEnum()
-	var timestamp int64 = time.Now().UnixNano() / 1000000
-	urlMap[e.R] = fmt.Sprintf("%d", ^(int32)(timestamp))
-	urlMap[e.PassTicket] = loginMap.PassTicket
+func WebInit(loginMap *m.LoginMap) error {
+	data := map[string]interface{}{}
+	data["BaseRequest"] = loginMap.BaseRequest
 
-	/* post数据 */
-	initPostJsonData := map[string]interface{}{}
-	initPostJsonData["BaseRequest"] = loginMap.BaseRequest
-
-	jsonBytes, err := json.Marshal(initPostJsonData)
+	b, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
 
-	resp, err := http.Post(e.INIT_URL+t.GetURLParams(urlMap), e.JSON_HEADER, strings.NewReader(string(jsonBytes)))
+	req, _ := http.NewRequest("POST", loginMap.Info["url"]+"/webwxinit", strings.NewReader(string(b)))
+	req.URL.RawQuery = url.Values{
+		"r":           {util.GetR()},
+		"pass_ticket": {loginMap.Info["pass_ticket"]},
+		"lang":        {"zh_CN"},
+	}.Encode()
+	req.Header.Add("ContentType", e.JSON_HEADER)
+	req.Header.Add("User-Agent", e.USER_AGENT)
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	b, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 
 	initInfo := m.InitInfo{}
-	err = json.Unmarshal(bodyBytes, &initInfo)
+	err = json.Unmarshal(b, &initInfo)
 	if err != nil {
-		return errors.New("无法解析JSON至InitInfo对象:" + err.Error())
+		return err
 	}
-
+	loginMap.User = initInfo.User
 	loginMap.SelfNickName = initInfo.User.NickName
 	loginMap.SelfUserName = initInfo.User.UserName
-
-	/* 组装synckey */
-	if initInfo.SyncKeys.Count < 1 {
-		fmt.Println(string(bodyBytes))
-		return errors.New("微信返回的数据有误")
-	}
 	loginMap.SyncKeys = initInfo.SyncKeys
 	loginMap.SyncKeyStr = initInfo.SyncKeys.ToString()
+
+	fmt.Println(loginMap)
 
 	return nil
 }

@@ -47,7 +47,7 @@ func main() {
 			}
 
 			fmt.Println("登陆信息处理完毕,正在初始化微信...")
-			err = s.InitWX(&loginMap)
+			err = s.WebInit(&loginMap)
 			if err != nil {
 				panicErr(err)
 			}
