@@ -61,7 +61,7 @@ func SyncCheck(loginMap *m.LoginMap) (int64, int64, error) {
 		Jar:     jar,
 		Timeout: timeout}
 
-	resp, err := client.Get(e.SYNC_CHECK_URL + t.GetURLParams(urlMap))
+	resp, err := client.Get(loginMap.Info["syncUrl"] + "/synccheck" + t.GetURLParams(urlMap))
 	if err != nil {
 		return 0, 0, err
 	}
@@ -74,6 +74,7 @@ func SyncCheck(loginMap *m.LoginMap) (int64, int64, error) {
 
 	/* 根据正则得到selector => window.synccheck={retcode:"0",selector:"0"}*/
 	reg := regexp.MustCompile(`^window.synccheck={retcode:"(\d+)",selector:"(\d+)"}$`)
+	fmt.Println(string(respBytes))
 	matches := reg.FindStringSubmatch(string(respBytes))
 
 	retcode, err := strconv.ParseInt(matches[1], 10, 64) /* 取第二个数据为retcode值 */

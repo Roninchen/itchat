@@ -90,7 +90,7 @@ func main() {
 
 	fmt.Println("开始监听消息响应...")
 	var retcode, selector int64
-	regAt := regexp.MustCompile(`^@.*@.*丁丁.*$`) /* 群聊时其他人说话时会在前面加上@XXX */
+	regAt := regexp.MustCompile(`^@.*@.*Chauncy.*$`) /* 群聊时其他人说话时会在前面加上@XXX */
 	regGroup := regexp.MustCompile(`^@@.+`)
 	regAd := regexp.MustCompile(`(朋友圈|点赞)+`)
 	secretCode := "cmd"
