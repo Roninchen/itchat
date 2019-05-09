@@ -37,7 +37,7 @@ func GetAllContact(loginMap *m.LoginMap) (map[string]m.User, error) {
 	client := &http.Client{
 		Jar: jar}
 
-	resp, err := client.Get(e.GET_ALL_CONTACT_URL + t.GetURLParams(urlMap))
+	resp, err := client.Get(loginMap.Info["url"] + "/webwxgetcontact" + t.GetURLParams(urlMap))
 	if err != nil {
 		return contactMap, err
 	}
