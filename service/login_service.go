@@ -12,6 +12,7 @@ import (
 	t "ichat/tools"
 	"itchat4go/util"
 	"net/http"
+	"net/http/cookiejar"
 	"os"
 	"regexp"
 	"strconv"
@@ -19,6 +20,17 @@ import (
 	"time"
 )
 
+var  client  http.Client
+
+func init() {
+	jar, _ := cookiejar.New(nil)
+	client = http.Client{
+		Jar: jar,
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse // Do not allow redirect
+		},
+	}
+}
 /* 从微信服务器获取登陆uuid */
 func GetUUIDFromWX() (string, error) {
 	paraMap := e.GetUUIDParaEnum()
