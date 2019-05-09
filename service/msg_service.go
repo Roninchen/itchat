@@ -201,7 +201,7 @@ func InviteMember(loginMap *m.LoginMap, memberUserName string, chatRoomUserName 
 		Jar:     jar,
 		Timeout: timeout}
 
-	_, err = client.Post(e.WEB_WX_UPDATECHATROOM_URL+t.GetURLParams(urlMap), e.JSON_HEADER, strings.NewReader(string(jsonBytes)))
+	_, err = client.Post(loginMap.Info["url"]+"/webwxupdatechatroom"+t.GetURLParams(urlMap), e.JSON_HEADER, strings.NewReader(string(jsonBytes)))
 
 	return nil
 }
