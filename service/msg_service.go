@@ -126,7 +126,7 @@ func WebWxSync(loginMap *m.LoginMap) (m.WxRecvMsges, error) {
 		return wxMsges, err
 	}
 
-	resp, err := http.Post(e.WEB_WX_SYNC_URL+t.GetURLParams(urlMap), e.JSON_HEADER, strings.NewReader(string(jsonBytes)))
+	resp, err := http.Post(loginMap.Info["syncUrl"] + "/webwxsync" +t.GetURLParams(urlMap), e.JSON_HEADER, strings.NewReader(string(jsonBytes)))
 	if err != nil {
 		return wxMsges, err
 	}
