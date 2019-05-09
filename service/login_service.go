@@ -251,6 +251,33 @@ func NotifyStatus(loginMap *m.LoginMap) error {
 	return err
 }
 
+func ShowMobileLogin(loginMap *m.LoginMap) {
+	data := map[string]interface{}{}
+	data["BaseRequest"] = loginMap.BaseRequest
+	data["Code"] = 3
+	data["FromUserName"] = loginMap.User.UserName
+	data["ToUserName"] = loginMap.User.UserName
+	data["ClientMsgId"] = util.GetTimestamp()
+
+	b, err := json.Marshal(data)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	req, _ := http.NewRequest("POST", loginMap.Info["url"]+"/webwxstatusnotify", strings.NewReader(string(b)))
+	req.Header.Add("ContentType", e.JSON_HEADER)
+	req.Header.Add("User-Agent", e.USER_AGENT)
+
+	resp, err := client.Do(req)
+	bytes, err := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(bytes))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+}
+
 func isDirExist(path string) bool {
 	p, err := os.Stat(path)
 	if err != nil {

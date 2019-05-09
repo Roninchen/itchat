@@ -53,10 +53,7 @@ func main() {
 			}
 
 			fmt.Println("初始化完毕,通知微信服务器登陆状态变更...")
-			err = s.NotifyStatus(&loginMap)
-			if err != nil {
-				panicErr(err)
-			}
+			s.ShowMobileLogin(&loginMap)
 
 			fmt.Println("通知完毕,本次登陆信息：")
 			fmt.Println(e.SKey + "\t\t" + loginMap.BaseRequest.SKey)
