@@ -8,6 +8,7 @@ import (
 	e "ichat/enum" /* 取个别名 */
 	m "ichat/model"
 	t "ichat/tools"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -163,7 +164,9 @@ func SendMsg(loginMap *m.LoginMap, wxSendMsg m.WxSendMsg) error {
 	if err != nil {
 		return err
 	}
-
+	fmt.Println("有人@我,随机睡几秒在发消息")
+	num := rand.Int31n(5)
+	time.Sleep(time.Duration(num)*time.Second)
 	// TODO: 发送微信消息时暂不处理返回值
 	_, err = http.Post(e.WEB_WX_SENDMSG_URL+t.GetURLParams(urlMap), e.JSON_HEADER, strings.NewReader(string(jsonBytes)))
 	if err != nil {

@@ -122,7 +122,7 @@ func main() {
 						/* 有人在群里@我，发个消息回答一下 */
 						wxSendMsg := m.WxSendMsg{}
 						wxSendMsg.Type = 1
-						wxSendMsg.Content = "我是丁丁编写的微信机器人，我已帮你通知我的主人，请您稍等片刻，他会跟您联系"
+						wxSendMsg.Content = "我是Chauncy编写的微信机器人，我已帮你通知我的主人，请您稍等片刻，他会跟您联系"
 						wxSendMsg.FromUserName = wxRecvMsges.MsgList[i].ToUserName
 						wxSendMsg.ToUserName = wxRecvMsges.MsgList[i].FromUserName
 						wxSendMsg.LocalID = fmt.Sprintf("%d", time.Now().Unix())
@@ -136,7 +136,7 @@ func main() {
 						/* 有人私聊我，并且内容含有「朋友圈」、「点赞」等敏感词，则回复 */
 						wxSendMsg := m.WxSendMsg{}
 						wxSendMsg.Type = 1
-						wxSendMsg.Content = "我是丁丁编写的微信机器人，我已经感应到一些敏感字符，我的主人对微商、朋友圈集赞、砍价等活动不感兴趣，请不要再发这些请求给他了，Sorry！"
+						wxSendMsg.Content = "我是Chauncy编写的微信机器人，我已经感应到一些敏感字符，我的主人对微商、朋友圈集赞、砍价等活动不感兴趣，请不要再发这些请求给他了，Sorry！"
 						wxSendMsg.FromUserName = wxRecvMsges.MsgList[i].ToUserName
 						wxSendMsg.ToUserName = wxRecvMsges.MsgList[i].FromUserName
 						wxSendMsg.LocalID = fmt.Sprintf("%d", time.Now().Unix())
@@ -149,7 +149,7 @@ func main() {
 						/* 有人私聊我，并且内容是密语，输出加群菜单 */
 						wxSendMsg := m.WxSendMsg{}
 						wxSendMsg.Type = 1
-						wxSendMsg.Content = fmt.Sprintf("我是丁丁编写的微信群聊助手，我为您提供了以下分组关键词：\n\n%s\n您可以输入上方关键词或者其索引号获取更详细的群聊目录，比如您可以输入\"编程\"或者\"1-0\"，我会为您细化系统内所有与计算机编程相关的领域，您可以进一步选择加入该领域的微信群聊。", e.GetFatherKeywordsStr())
+						wxSendMsg.Content = fmt.Sprintf("我是Chauncy编写的微信群聊助手，我为您提供了以下分组关键词：\n\n%s\n您可以输入上方关键词或者其索引号获取更详细的群聊目录，比如您可以输入\"编程\"或者\"1-0\"，我会为您细化系统内所有与计算机编程相关的领域，您可以进一步选择加入该领域的微信群聊。", e.GetFatherKeywordsStr())
 						wxSendMsg.FromUserName = wxRecvMsges.MsgList[i].ToUserName
 						wxSendMsg.ToUserName = wxRecvMsges.MsgList[i].FromUserName
 						wxSendMsg.LocalID = fmt.Sprintf("%d", time.Now().Unix())
