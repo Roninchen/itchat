@@ -7,9 +7,10 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	e "itchat4go/enum" /* 取个别名 */
-	m "itchat4go/model"
-	t "itchat4go/tools"
+	e "ichat/enum" /* 取个别名 */
+	m "ichat/model"
+	t "ichat/tools"
+	"itchat4go/util"
 	"net/http"
 	"os"
 	"regexp"
@@ -116,40 +117,51 @@ func CheckLogin(uuid string) (int64, string) {
  */
 func ProcessLoginInfo(loginInfoStr string) (m.LoginMap, error) {
 	resultMap := m.LoginMap{}
-	reg := regexp.MustCompile(`window.redirect_uri="(\S+)";`)
-	matches := reg.FindStringSubmatch(loginInfoStr)
-	if len(matches) < 2 {
-		return resultMap, errors.New("登陆反馈的信息格式有误")
-	}
 
-	/* https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage?ticket=AQ2uT-dEQQWVcwTg_oiY2UYl@qrticket_0&uuid=gb2NHSWMLg==&lang=zh_CN&scan=1503967665 */
-	orginUri := matches[1] + "&fun=new&version=v2"
+	re := regexp.MustCompile(`window.redirect_uri="(\S+)";`)
+	matches := re.FindStringSubmatch(loginContent)
+	resultMap.Info = make(map[string]string)
+	resultMap.Info["url"] = matches[1]
 
-	/* 这里除了XML的返回之外，还会有一些Cookie数据传给客户端，需要收集起来 */
-	resp, err := http.Get(orginUri)
+	req, _ := http.NewRequest("GET", resultMap.Info["url"], nil)
+	req.Header.Add("User-Agent", e.USER_AGENT)
+
+	resp, err := client.Do(req)
 	if err != nil {
-		return resultMap, errors.New("访问微信登陆回调URL有误" + err.Error())
+		return resultMap,err
 	}
 	defer resp.Body.Close()
 
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return resultMap, errors.New("获取微信登陆回调URL数据失败:" + err.Error())
+		return resultMap,err
+	}
+	result := m.LoginCallbackXMLResult{}
+	err = xml.Unmarshal(b, &result)
+	if err != nil {
+		return resultMap,err
 	}
 
-	loginCallbackXMLResult := m.LoginCallbackXMLResult{}
-	err = xml.Unmarshal(bodyBytes, &loginCallbackXMLResult)
+	resultMap.BaseRequest.DeviceID = util.GetRandomID(15)
+	resultMap.BaseRequest.SKey = result.SKey
+	resultMap.BaseRequest.Sid = result.WXSid
+	resultMap.BaseRequest.Uin = result.WXUin
+	resultMap.PassTicket = result.PassTicket
+	resultMap.Info["pass_ticket"] = result.PassTicket
+	resultMap.Info["logintime"] = util.GetTimestamp()
+	resultMap.Info["url"] = resultMap.Info["url"][:strings.LastIndex(resultMap.Info["url"], "/")]
 
-	resultMap.BaseRequest.SKey = loginCallbackXMLResult.SKey
-	resultMap.BaseRequest.Sid = loginCallbackXMLResult.WXSid
-	resultMap.BaseRequest.Uin = loginCallbackXMLResult.WXUin
-	resultMap.BaseRequest.DeviceID = "e" + t.GetRandomString(10, 15)
-
-	resultMap.PassTicket = loginCallbackXMLResult.PassTicket
+	indexUrl := req.URL.Hostname()
+	if detailedUrl, ok := e.DetailedUrls[indexUrl]; ok {
+		resultMap.Info["fileUrl"] = fmt.Sprintf("https://%s/cgi-bin/mmwebwx-bin", detailedUrl[0])
+		resultMap.Info["syncUrl"] = fmt.Sprintf("https://%s/cgi-bin/mmwebwx-bin", detailedUrl[1])
+	} else {
+		resultMap.Info["fileUrl"] = resultMap.Info["url"]
+		resultMap.Info["syncUrl"] = resultMap.Info["url"]
+	}
 
 	/* 收集Cookie */
 	resultMap.Cookies = resp.Cookies()
-
 	return resultMap, nil
 }
 

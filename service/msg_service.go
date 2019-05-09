@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	e "itchat4go/enum" /* 取个别名 */
-	m "itchat4go/model"
-	t "itchat4go/tools"
+	e "ichat/enum" /* 取个别名 */
+	m "ichat/model"
+	t "ichat/tools"
 	"net/http"
 	"net/url"
 	"regexp"
