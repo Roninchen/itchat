@@ -10,7 +10,7 @@ import (
 	e "ichat/enum" /* 取个别名 */
 	m "ichat/model"
 	t "ichat/tools"
-	"itchat4go/util"
+	"ichat/util"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
